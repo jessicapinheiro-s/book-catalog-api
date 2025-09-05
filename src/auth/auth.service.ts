@@ -1,12 +1,14 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto, ResetPasswordDto } from "./dto/auth-dto";
+import { CreateUserDto, LoginUserDto, ResetPasswordDto } from "./dto/auth-dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import * as crypto from 'crypto';
+import { JwtService } from "@nestjs/jwt";
 @Injectable()
 export class AuthService {
     constructor(
-        private prisma: PrismaService
+        private prisma: PrismaService,
+        private jwtService: JwtService
     ) { }
 
     async register(createUserDto: CreateUserDto) {
@@ -37,10 +39,10 @@ export class AuthService {
         }
     }
 
-    async login(createUserDto: CreateUserDto) {
+    async login(loginUserDto: LoginUserDto) {
         const {
-            name, email, password
-        } = createUserDto;
+            email, password
+        } = loginUserDto;
 
         const userExists = await this.prisma.user.findUnique({
             where: {
@@ -49,18 +51,26 @@ export class AuthService {
         });
 
         if (!userExists) {
-            throw new Error('E-mail already registered');
+            throw new UnauthorizedException('The user does not exist');
         } else {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const user = await this.prisma.user.create({
-                data: {
-                    name, email, password: hashedPassword
-                }
-            });
+            const isPasswordValid = await bcrypt.compare(password, userExists.password);
+
+            if(!isPasswordValid) {
+                throw new UnauthorizedException('The password is incorrect');
+            }
+            const payload = {
+                sub: userExists.id,
+                email: userExists.email
+            };
+            const acessToken = this.jwtService.sign(payload);
 
             return {
-                message: 'User created sucessfully',
-                userId: user.id
+                acessToken,
+                user: {
+                    id: userExists.id,
+                    name: userExists.name,
+                    email: userExists.email
+                }
             }
         }
     }

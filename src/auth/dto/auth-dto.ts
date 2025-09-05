@@ -4,6 +4,11 @@ export class CreateUserDto {
     password: string;
 }
 
+export class LoginUserDto {
+    email: string;
+    password: string;
+}
+
 export class ResetPasswordDto {
     token: string;
     newPassword: string;
