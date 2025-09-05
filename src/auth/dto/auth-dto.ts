@@ -3,3 +3,8 @@ export class CreateUserDto {
     name: string;
     password: string;
 }
+
+export class ResetPasswordDto {
+    token: string;
+    newPassword: string;
+}
