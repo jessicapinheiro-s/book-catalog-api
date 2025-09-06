@@ -17,11 +17,13 @@ export class BookService {
             throw new BadRequestException('This book already exists');
         }
 
-        await this.prisma.book.create({
+        const bookCreated = await this.prisma.book.create({
             data: {
                 book
             }
-        })
+        });
+
+        return bookCreated;
     }
 
     async getAll() {

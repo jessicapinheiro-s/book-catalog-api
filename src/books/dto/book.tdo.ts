@@ -7,11 +7,11 @@ export class User {
 }
 
 export class Book {
-    id: number;
+    id?: number;
     title: string;
     author: string;
     genre: string;
     status: string;
-    userId: number;
-    user: User;
+    userId?: number;
+    user?: User;
 }
