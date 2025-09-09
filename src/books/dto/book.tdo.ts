@@ -12,6 +12,6 @@ export class Book {
     author: string;
     genre: string;
     status: string;
-    userId?: number;
+    userId: number;
     user?: User;
 }

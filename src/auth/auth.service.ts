@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto, LoginUserDto, ResetPasswordDto } from "./dto/auth-dto";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import * as crypto from 'crypto';
 import { JwtService } from "@nestjs/jwt";
 @Injectable()
@@ -55,7 +55,7 @@ export class AuthService {
         } else {
             const isPasswordValid = await bcrypt.compare(password, userExists.password);
 
-            if(!isPasswordValid) {
+            if (!isPasswordValid) {
                 throw new UnauthorizedException('The password is incorrect');
             }
             const payload = {
@@ -112,18 +112,18 @@ export class AuthService {
             where: { token }
         });
 
-        if(!tokenExists) {
+        if (!tokenExists) {
             throw new BadRequestException('The token is invalid or it is expired');
         }
 
-        const newPasswordashed = bcrypt.hash(newPassword, 10);
-        
+        const newPasswordashed = await bcrypt.hash(newPassword, 10);
+
         await this.prisma.user.update({
             where: {
-                id: tokenExists.id,
-                data: {
-                    password: newPasswordashed
-                }
+                id: tokenExists.userId
+            },
+            data: {
+                password: newPasswordashed
             }
         });
 
@@ -135,6 +135,19 @@ export class AuthService {
 
         return {
             message: 'The password was redefined sucessfully'
+        }
+    }
+
+    async getAuthUser (context) {
+        const {id} = context;
+        const userExists = await this.prisma.user.findUnique({
+            where: {
+                id
+            }
+        });
+
+        if(userExists) {
+            
         }
     }
 }

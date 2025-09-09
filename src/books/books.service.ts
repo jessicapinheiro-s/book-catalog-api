@@ -1,13 +1,14 @@
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { Book } from '../../src/books/dto/book.tdo'
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
+@Injectable()
 export class BookService {
     constructor(
-        private prisma: PrismaService,
+        private readonly prisma: PrismaService,
     ) { };
 
     async create(book: Book) {
-        const bookExists = await this.prisma.book.findUnique({
+        const bookExists = await this.prisma.book.findFirst({
             where: {
                 title: book.title
             }
@@ -17,9 +18,14 @@ export class BookService {
             throw new BadRequestException('This book already exists');
         }
 
+        
         const bookCreated = await this.prisma.book.create({
             data: {
-                book
+                title: book.title,
+                author: book.author,
+                genre: book.genre,
+                status: book.status,
+                userId: book.userId, // se houver relacionamento
             }
         });
 
