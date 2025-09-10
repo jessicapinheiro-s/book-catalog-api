@@ -14,7 +14,6 @@ describe('auth', () => {
         service = module.get<AuthService>(AuthService);
     });
 
-
     it('An user should be created', async() => {
         const user = await service.register({
             email: 'jessica@gmail.com',
@@ -26,7 +25,7 @@ describe('auth', () => {
         expect(user.message).toBe("User created sucessfully");
     });
 
-    it('', async() => {
+    it('Should return the session login', async() => {
         const user = await service.login({
             email: 'jessica@gmail.com',
             password: '123456789'
@@ -34,4 +33,10 @@ describe('auth', () => {
 
         expect(user).not.toBeNull();
     });
-})
+
+    it('Should return a token for password reset', async() => {
+        const resetToken = await service.generateResetToken('jessica@gmail.com');
+
+        expect(resetToken).not.toBeNull();
+    });
+})  
