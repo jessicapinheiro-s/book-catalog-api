@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, Get, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { BookService } from "./books.service";
 import { Book, BookUpdate } from "./dto/book.tdo";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 @Controller('book')
 export class BookController {
     constructor(
         private readonly bookService: BookService
     ) {}
+    @UseGuards(JwtAuthGuard)
 
     @Get('all')
     async getAll() {
