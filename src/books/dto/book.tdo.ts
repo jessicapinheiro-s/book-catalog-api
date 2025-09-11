@@ -29,7 +29,7 @@ export class Book {
 }
 export class BookUpdate {
     @IsNotEmpty()
-    id?: number;
+    id: number;
     @IsNotEmpty()
     title?: string;
     @IsNotEmpty()
