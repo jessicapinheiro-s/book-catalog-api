@@ -1,5 +1,5 @@
 import { PrismaService } from "../prisma/prisma.service";
-import { Book } from '../../src/books/dto/book.tdo'
+import { Book, BookUpdate } from '../../src/books/dto/book.tdo'
 import { BadRequestException, Injectable } from "@nestjs/common";
 @Injectable()
 export class BookService {
@@ -43,5 +43,15 @@ export class BookService {
                 title: name
             }
         })
+    }
+
+    async updateBookById (book: BookUpdate){
+        const ifBookExists = await this.prisma.book.findUnique({
+            where: {
+                id: book.id
+            }
+        });
+
+        
     }
 }

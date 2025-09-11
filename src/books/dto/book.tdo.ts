@@ -15,3 +15,10 @@ export class Book {
     userId: number;
     user?: User;
 }
+export class BookUpdate {
+    id?: number;
+    title?: string;
+    author?: string;
+    genre?: string;
+    status?: string;
+}
